@@ -77,14 +77,17 @@ function SearchResults() {
           <h3 className="text-xl text-black font-semibold mb-4">검색 결과 (333)</h3>
           {/* 예시로 검색 결과를 추가하였습니다. 실제로는 API 호출 결과나 상태 관리 로직을 사용하여 검색 결과를 렌더링하실 수 있습니다. */}
           <SearchResultCard 
+            id="1"
             title="검색 결과1" 
             description="검색 결과1에 대한 설명입니다."
           />
           <SearchResultCard 
+            id="2"
             title="검색 결과2" 
             description="검색 결과2에 대한 설명입니다." 
           />
           <SearchResultCard 
+            id="3"
             title="검색 결과3" 
             description="검색 결과3에 대한 설명입니다." 
           />
