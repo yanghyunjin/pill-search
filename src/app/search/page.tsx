@@ -87,19 +87,19 @@ function SearchResults() {
             id="1"
             title="검색 결과1"
             description="검색 결과1에 대한 설명입니다."
-            query={query}
+            query={query? query:''}
           />
           <SearchResultCard
             id="2"
             title="검색 결과2"
             description="검색 결과2에 대한 설명입니다."
-            query={query}
+            query={query? query:''}
           />
           <SearchResultCard
             id="3"
             title="검색 결과3"
             description="검색 결과3에 대한 설명입니다."
-            query={query}
+            query={query? query:''}
           />
         </div>
       </main>
