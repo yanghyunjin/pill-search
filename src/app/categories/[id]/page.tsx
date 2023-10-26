@@ -123,7 +123,7 @@ function CategoryPage({
             </div>
           </div>
 
-          <button onClick={handleSearch} className="mb-6">검색</button>
+          <button className="w-full bg-blue-200 mb-6 px-4 py-2 rounded-md" onClick={handleSearch} >검색</button>
 
           <table className="min-w-full bg-white border border-gray-300">
             <thead>
