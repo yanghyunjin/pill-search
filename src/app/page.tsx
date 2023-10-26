@@ -82,7 +82,7 @@ export default function Home() {
                 className="w-full p-4 pl-12 text-lg text-black border rounded-md focus:outline-none focus:border-blue-500"
             />
             {suggestions.length > 0 && (
-              <div className="absolute top-full left-0 mt-2 bg-white border rounded-md shadow-lg">
+              <div className="absolute top-full left-0 mt-2 bg-white border rounded-md shadow-lg z-10">
                 {suggestions.map(suggestion => (
                   <div key={suggestion} className="p-2 hover:bg-gray-200 cursor-pointer" onClick={() => handleSuggestionClick(suggestion)}>
                     {suggestion}
