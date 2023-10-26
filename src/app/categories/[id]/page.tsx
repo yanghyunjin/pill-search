@@ -11,14 +11,19 @@ function CategoryPage({
 }) {
   const router = useRouter();
 
-  const categories = {
-    code114:'해열, 진통, 소염제',
-    code233:'건위소화제',
-    code269:'기타의 외피용약',
-    code214:"혈압강하제",
-    code218:"동맥경화제",
-    code421:"항악성종양제"
+  type CategoryKeys = 'code114' | 'code233' | 'code269' | 'code214' | 'code218' | 'code421';
+
+  const categories: Record<CategoryKeys, string> = {
+    code114: '해열, 진통, 소염제',
+    code233: '건위소화제',
+    code269: '기타의 외피용약',
+    code214: '혈압강하제',
+    code218: '동맥경화제',
+    code421: '항악성종양제',
   };
+
+  const key = `code${params.id}` as CategoryKeys;
+  
   const [searchFields, setSearchFields] = useState({
     companyName: '',
     division: '',
@@ -63,7 +68,7 @@ function CategoryPage({
     // ... (더 많은 제품 데이터)
   ];
 
-  const handleChange = (e) => {
+  const handleChange = (e:any) => {
     setSearchFields({
       ...searchFields,
       [e.target.name]: e.target.value,
@@ -92,7 +97,7 @@ function CategoryPage({
       <div className="text-black flex-grow flex flex-col items-center">
         <div className="w-full max-w-3xl mb-12 relative">
           <h1 className="text-2xl mb-4">
-            <span className="text-blue-500">{params.id} {categories[`code${params.id}`]} </span>
+            <span className="text-blue-500">{`${params.id} ${categories[key]}`}</span>
             <span className="text-black">검색결과 리스트 (33개)</span>
           </h1>
 
