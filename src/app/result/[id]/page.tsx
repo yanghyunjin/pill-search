@@ -116,10 +116,10 @@ function ResultDetail() {
         {/* 상세 결과 섹션 */}
         {!showDetail && (
           <div className="w-full max-w-3xl flex flex-wrap -mx-2">
-            <div className="w-1/2 px-2">
+            <div className="w-full md:w-1/2 px-2"> {/* 모바일에서 전체, 중간 크기 화면에서 반반 */}
               <DetailInfoCard />
             </div>
-            <div className="w-1/2 px-2">
+            <div className="w-full md:w-1/2 px-2"> {/* 모바일에서 전체, 중간 크기 화면에서 반반 */}
               <ProductImageCard />
               <SimilarIngredientCard />
             </div>
