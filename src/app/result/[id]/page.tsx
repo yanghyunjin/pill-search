@@ -1,41 +1,157 @@
 "use client";
 import Head from "next/head";
-import { useState } from "react";
+import { useState,useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useSearchParams } from "next/navigation";
 import SearchResultCard from "../../../components/SearchResultCard";
 import RecommendedKeyword from "../../../components/RecommendedKeyword";
+import { db, app } from '../../../firebase'; // Firebase 설정 파일
+import { ref, get, set, push, child, remove, update, serverTimestamp } from 'firebase/database';
 
-function ResultDetail() {
+
+function ResultDetail({
+  params
+}: {
+  params: { id: string };
+}){
   const [showDetail, setShowDetail] = useState(false);
   const searchParams = useSearchParams();
   const [name, setName] = useState(searchParams.get("name"));
   const [query, setQuery] = useState(searchParams.get("query"));
+  const [isLoading, setIsLoading] = useState(true);
+  const [result,setResult]= useState();
   const router = useRouter();
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault(); // 기본 폼 제출 동작 방지
     router.push(`/search?query=${query}`);
   };
 
+  useEffect(()=>{
+    getData();
+  },[])
+
+  const getData= async ()=>{
+    setIsLoading(true);
+    const temp = await get(child(ref(db), `/MergedDrugInfo/${params.id}`)) 
+    setResult(temp.val());    
+    setIsLoading(false); 
+  }
   // 상세 정보 카드
   const DetailInfoCard: React.FC = () => {
     return (
-      <div className="bg-white p-4 rounded-md shadow-sm mb-6">
-        <h4 className="font-semibold mb-4">상세 정보</h4>
-        <p>
-          <strong>제조업체:</strong> 예시 제조업체
-        </p>
-        <p>
-          <strong>성분:</strong> 예시 성분
-        </p>
-        <p>
-          <strong>이름:</strong> 예시 이름
-        </p>
-        <p>
-          <strong>제약사:</strong> 예시 제약사
-        </p>
-        {/* 기타 정보들... */}
-      </div>
+      
+        <div className="bg-white p-4 rounded-md shadow-sm mb-6">
+          <h4 className="font-semibold mb-4">상세 정보</h4>
+          <table className="min-w-full divide-y divide-gray-200">
+            <tbody>
+              <tr>
+                <td className="py-2  w-1/2">성분명</td>
+                <td className="py-2 font-semibold">{
+                //@ts-ignore
+                result?.gnlnmcd? result?.gnlnmcd :''
+                }</td>
+              </tr>
+              <tr>
+                <td className="py-2 ">함량</td>
+                <td className="py-2 font-semibold"></td>
+              </tr>
+              <tr>
+                <td className="py-2 ">업체명</td>
+                
+                <td className="py-2 font-semibold">{
+                //@ts-ignore
+                result?.entpname? result?.entpname :''
+                }</td>
+              </tr>
+              <tr>
+                <td className="py-2">전문/일반</td>
+                <td className="py-2 font-semibold"> {
+                //@ts-ignore
+                result?.etcotcname? result?.etcotcname :''
+                }</td>
+              </tr>
+              <tr>
+                <td className="py-2">효능(복지부분류코드)</td>
+                <td className="py-2 font-semibold"> {
+                //@ts-ignore
+                result?.classname? result?.classname :''
+                }</td>
+              </tr>
+              <tr>
+                <td className="py-2">성상</td>
+                <td className="py-2 font-semibold">{
+                //@ts-ignore
+                result?.chart? result?.chart :''
+                } </td>
+              </tr>
+              <tr>
+                <td className="py-2">약가/급여</td>
+                <td className="py-2 font-semibold">{
+                //@ts-ignore
+                result?.maxprice? result?.maxprice :''
+                } </td>
+              </tr>
+              <tr>
+                <td className="py-2">대조/생동</td>
+                <td className="py-2 font-semibold">{
+                //@ts-ignore
+                result?.compdruggbkor? result?.compdruggbkor :''
+                } </td>
+              </tr>
+              <tr>
+                <td className="py-2">허가일</td>
+                <td className="py-2 font-semibold"> {
+                //@ts-ignore
+                result?.itempermitdate? result?.itempermitdate :''
+                } </td>
+              </tr>
+              <tr>
+                <td className="py-2">품목기준코드(허가코드)</td>
+                <td className="py-2 font-semibold"> {
+                //@ts-ignore
+                result?.itemseq? result?.itemseq :''
+                }</td>
+              </tr>
+              <tr>
+                <td className="py-2">일반명코드(주성분코드)</td>
+                <td className="py-2 font-semibold"> {
+                //@ts-ignore
+                result?.gnlnmcd? result?.gnlnmcd :''
+                }</td>
+              </tr>
+              <tr>
+                <td className="py-2">ATC코드(WHO코드)</td>
+                <td className="py-2 font-semibold"> {
+                //@ts-ignore
+                result?.atccode? result?.atccode :''
+                }</td>
+              </tr>
+              <tr>
+                <td className="py-2">EDI코드(보험코드)</td>
+                <td className="py-2 font-semibold"> {
+                //@ts-ignore
+                result?.edicode? result?.edicode :''
+                }</td>
+              </tr>
+              <tr>
+                <td className="py-2">대표코드(품목코드)</td>
+                <td className="py-2 font-semibold"> {
+                //@ts-ignore
+                result?.representativecode? result?.representativecode :''
+                }</td>
+              </tr>
+              
+              <tr>
+                <td className="py-2 ">표준코드(유통 바코드)</td>
+                <td className="py-2 font-semibold">{
+                //@ts-ignore
+                result?.standardcode? result?.standardcode :''
+                }</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+    
     );
   };
 
@@ -45,10 +161,36 @@ function ResultDetail() {
       <div className="bg-white p-4 rounded-md shadow-sm mb-6">
         <h4 className="font-semibold mb-4">제품 이미지</h4>
         <img
-          src="/path/to/image.jpg"
+          src={
+            //@ts-ignore
+            result?.itemimage? result?.itemimage:''
+          }
           alt="제품 이미지"
           className="w-full h-auto"
         />
+        {/* <img
+          src={result?.markcodefrontimg? result?.markcodefrontimg:''}
+          alt="제품 이미지"
+          className="w-full h-auto"
+        />
+        <img
+          src={result?.markcodebackimg? result?.markcodebackimg:''}
+          alt="제품 이미지"
+          className="w-full h-auto"
+        /> */}
+        <p>
+        {
+          //@ts-ignore
+          result?.printfront? result?.printfront :''
+        }
+        </p>
+        
+        <p>
+        {
+          //@ts-ignore
+          result?.printback? result?.printback :''
+        }
+        </p>
       </div>
     );
   };
@@ -58,8 +200,15 @@ function ResultDetail() {
     return (
       <div className="bg-white p-4 rounded-md shadow-sm">
         <h4 className="font-semibold mb-4">동일 성분 의약품 (10)</h4>
-        <p>예시 의약품1</p>
-        <p>예시 의약품2</p>
+        {/* {searchResultArray.map(item => ( */}
+            <SearchResultCard
+              key={'item.itemseq'}
+              id={'item.itemseq'}
+              title={'item.itemname'}
+              description={'item.company'}
+              query={'item.itemname'}
+            />
+          {/* ))} */}
         {/* 기타 동일 성분 의약품들... */}
       </div>
     );
@@ -74,7 +223,7 @@ function ResultDetail() {
 
       {/* Header / Logo */}
       <header className="mb-12">
-        <div className="bg-blue-200 p-4 rounded-md inline-block">
+        <div className="bg-blue-200 p-4 rounded-md inline-block" onClick={()=>router.push("/")}>
           <h1 className="text-4xl font-bold inline">
             <span className="text-white">MEDI</span>
             <span className="text-black">PRETER</span>
@@ -130,27 +279,42 @@ function ResultDetail() {
           <div className="w-full max-w-3xl mt-2">
             <div className="bg-white p-4 rounded-md shadow-sm mb-4">
               <h4 className="font-semibold mb-4">효능 효과</h4>
-              <p>예시 내용</p>
+              <p>{
+                //@ts-ignore
+                result?.efcyQesitm? result?.efcyQesitm :''
+                }</p>
             </div>
 
             <div className="bg-white p-4 rounded-md shadow-sm mb-4">
               <h4 className="font-semibold mb-4">용법 용량</h4>
-              <p>예시 내용</p>
+              <p>{
+                //@ts-ignore
+                result?.useMethodQesitm? result?.useMethodQesitm :''
+                }</p>
             </div>
 
             <div className="bg-white p-4 rounded-md shadow-sm mb-4">
               <h4 className="font-semibold mb-4">사용상의 주의사항</h4>
-              <p>예시 내용</p>
+              <p>{
+                //@ts-ignore
+                result?.atpnQesitm? result?.atpnQesitm :''
+                }</p>
             </div>
 
             <div className="bg-white p-4 rounded-md shadow-sm mb-4">
               <h4 className="font-semibold mb-4">상호작용</h4>
-              <p>예시 내용</p>
+              <p>{
+                //@ts-ignore
+                result?.intrcQesitm? result?.intrcQesitm :''
+                }</p>
             </div>
 
             <div className="bg-white p-4 rounded-md shadow-sm">
               <h4 className="font-semibold mb-4">부작용</h4>
-              <p>예시 내용</p>
+              <p>{
+                //@ts-ignore
+                result?.seQesitm? result?.seQesitm :''
+                }</p>
             </div>
           </div>
         )}

@@ -16,15 +16,6 @@ const categories: Record<CategoryKeys, string> = {
   code421: '항악성종양제',
 };
 
-type Product = {
-  GnlNmCd: string;
-  ItemName: string;
-  ingredient: string;
-  EntpName: string;
-  EtcOtcName: string;
-  insuranceCode: string;
-};
-
 
 function CategoryPage({
   params,
@@ -33,7 +24,8 @@ function CategoryPage({
 }) {
 
   const router = useRouter();
-  const [products,setProducts] = useState<Product[]>([]);
+  const [products,setProducts] = useState([]);
+  const [productsDetail,setProductsDetail] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 20;
@@ -42,51 +34,54 @@ function CategoryPage({
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentItems = products? products.slice(indexOfFirstItem, indexOfLastItem):[];
+  const items = products? products.slice(indexOfFirstItem, indexOfLastItem):[];
   const [startingPageNumber, setStartingPageNumber] = useState(1);
   const endingPageNumber = startingPageNumber + maxPageNumbersToShow - 1;
-
   const key = `code${params.id}` as CategoryKeys;
+  const datas = require(`/public/products${params.id}.json`);
+
+  
 
   const [searchFields, setSearchFields] = useState({
-    companyName: '',
-    division: '',
-    productName: '',
-    insuranceCode: '',
+    entpname: '',
+    etcotcname: '',
+    itemname: '',
+    edicode: '',
   });
-
-  
   
   useEffect(()=>{
-    getProductsData();
-  },[])
-
-  useEffect(()=>{
-    console.log(currentItems)
-    getProductsDetail(currentItems)
-  },[currentItems])
-
-  const handlePageChange = (pageNumber: any) => {
-    setCurrentPage(pageNumber);
-  }
-    
-  const getProductsDetail= async(productCode:any)=>{
     setIsLoading(true);
-    console.log(productCode)
-    const promises = productCode.map(async (item: any) => {
-      console.log(item.GnlNmCd)
-      const snapshot = await get(child(ref(db), `/StandardCodeWithPriceByGnlNmCode/${item.GnlNmCd}`));
-      const data = snapshot.val();
-      console.log(data);
-    });
-  
-    // const results = await Promise.all(promises); 
-    setIsLoading(false); 
-  };
+    
+    setProducts(datas);
+    setIsLoading(false);
+    // getProductsData();
+  },[])
+ 
   const getProductsData= async()=>{
     setIsLoading(true);
     const ret = await get(child(ref(db), `/BenefitDrugList/${params.id}`));
-    await setProducts(ret.val());
-    await getProductsDetail(currentItems);
+        // 데이터를 가져와서 unique한 GnlNmCd만을 가진 아이템들을 필터링
+    const data = ret.val();
+    const uniqueGnlNmCdItems:any = [];
+    const seen = new Set();
+
+    for (const item of data) {
+      if (!seen.has(item.GnlNmCd)) {
+        seen.add(item.GnlNmCd);
+        uniqueGnlNmCdItems.push(item);
+      }
+    }
+    let array:any =[];
+    for(let i=0;i<uniqueGnlNmCdItems.length;i++){
+      
+      const snapshot = await get(child(ref(db), `/MergedDrugInfoByGnlNmCd/${uniqueGnlNmCdItems[i].GnlNmCd}`));
+      console.log(snapshot.val())
+      if(snapshot.val()!=null){
+        array.push(...snapshot.val()) 
+      }
+    }
+
+    await setProducts(array);
     setIsLoading(false); 
   };
 
@@ -98,8 +93,55 @@ function CategoryPage({
   };
 
   const handleSearch = () => {
-    // 검색 로직 구현
+    // 원본 데이터 (예를 들어 products)를 필터링하여 일치하는 항목만 가져옵니다.
+    const filteredProducts = datas.filter((product: { entpname: string | string[]; etcotcname: string | string[]; itemname: string | string[]; edicode: string; }) => {
+      // 각 필드에 대해 검색 조건을 확인합니다.
+      if (searchFields.entpname && !product.entpname.includes(searchFields.entpname)) {
+        return false;
+      }
+      if (searchFields.etcotcname && !product.etcotcname.includes(searchFields.etcotcname)) {
+        return false;
+      }
+      if (searchFields.itemname && !product.itemname.includes(searchFields.itemname)) {
+        return false;
+      }
+      if (searchFields.edicode && product.edicode !== searchFields.edicode) {
+        return false;
+      }
+      // 위의 모든 조건을 만족하는 경우에만 결과에 포함시킵니다.
+      return true;
+    });
+
+    // 필터링된 결과를 상태로 설정합니다.
+    setProducts(filteredProducts);
+    setCurrentPage(1);
   };
+  const handleDownload = () => {
+    // products 배열을 문자열로 변환
+    const jsonData = JSON.stringify(products, null, 2); // 두 번째와 세 번째 인수를 사용하여 JSON을 읽기 쉽게 포맷팅
+    const blob = new Blob([jsonData], { type: 'application/json' }); // Blob 생성
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    
+    a.href = url;
+    a.download = 'products.json'; // 다운로드될 파일 이름
+    document.body.appendChild(a);
+    a.click(); // 다운로드 링크를 클릭하여 파일 다운로드 시작
+    a.remove(); // 링크 제거
+    URL.revokeObjectURL(url); // URL을 해제하여 메모리를 해제합니다.
+  };
+  const renderItems = () => {
+    return currentItems.map((item:any , idx) => (
+      <tr key={`${item.GnlNmCd}${idx}`} className="hover:bg-gray-100" onClick={() => router.push(`/result/${item.itemseq}?name=${item.itemname}&query=${item.itemname}`)}>
+        <td className="border-b border-gray-200 px-4 py-2"><img src={item.itemimage} alt={item.GnlNmCd} className="w-10 h-10" /></td>
+        <td className="border-b border-gray-200 px-4 py-2">{item.itemname}</td>
+        <td className="border-b border-gray-200 px-4 py-2">{item.ingrqty}</td>
+        <td className="border-b border-gray-200 px-4 py-2">{item.entpname}</td>
+        <td className="border-b border-gray-200 px-4 py-2">{item.etcotcname}</td>
+        <td className="border-b border-gray-200 px-4 py-2">{item.edicode}</td>
+      </tr>
+    ));
+  }
 
   return (
     <div className="flex flex-col min-h-screen p-6 bg-gray-100">
@@ -109,7 +151,7 @@ function CategoryPage({
       </Head>
       {/* Header / Logo */}
       <header className="mb-12">
-        <div className="bg-blue-200 p-4 rounded-md inline-block">
+        <div className="bg-blue-200 p-4 rounded-md inline-block" onClick={()=>router.push("/")}>
           <h1 className="text-4xl font-bold inline">
             <span className="text-white">MEDI</span>
             <span className="text-black">PRETER</span>
@@ -117,7 +159,7 @@ function CategoryPage({
         </div>
       </header>
       <div className="text-black flex-grow flex flex-col items-center">
-        <div className="w-full max-w-3xl mb-12 relative">
+        <div className="w-10/12 mb-12 relative">
           <h1 className="text-2xl mb-4">
             <span className="text-blue-500">{`${params.id} ${categories[key]}`}</span>
             <span className="text-black">{`검색결과 리스트 (${products?products.length:0}개)`}</span>
@@ -125,27 +167,29 @@ function CategoryPage({
 
           <div className="mb-6 grid grid-cols-2 gap-4">
             <div>
-              <label htmlFor="companyName" className="block text-sm font-medium text-gray-700">업체명</label>
-              <input type="text" name="companyName" id="companyName" value={searchFields.companyName} onChange={handleChange} className="mt-1 block w-full text-lg p-2"/>
+              <label htmlFor="entpname" className="block text-sm font-medium text-gray-700">업체명</label>
+              <input type="text" name="entpname" id="entpname" value={searchFields.entpname} onChange={handleChange} className="mt-1 block w-full text-lg p-2"/>
             </div>
 
             <div>
-              <label htmlFor="division" className="block text-sm font-medium text-gray-700">구분</label>
-              <input type="text" name="division" id="division" value={searchFields.division} onChange={handleChange} className="mt-1 block w-full text-lg p-2"/>
+              <label htmlFor="etcotcname" className="block text-sm font-medium text-gray-700">구분</label>
+              <input type="text" name="etcotcname" id="etcotcname" value={searchFields.etcotcname} onChange={handleChange} className="mt-1 block w-full text-lg p-2"/>
             </div>
 
             <div>
-              <label htmlFor="productName" className="block text-sm font-medium text-gray-700">제품명</label>
-              <input type="text" name="productName" id="productName" value={searchFields.productName} onChange={handleChange} className="mt-1 block w-full text-lg p-2"/>
+              <label htmlFor="itemname" className="block text-sm font-medium text-gray-700">제품명</label>
+              <input type="text" name="itemname" id="itemname" value={searchFields.itemname} onChange={handleChange} className="mt-1 block w-full text-lg p-2"/>
             </div>
 
             <div>
-              <label htmlFor="insuranceCode" className="block text-sm font-medium text-gray-700">보험코드</label>
-              <input type="text" name="insuranceCode" id="insuranceCode" value={searchFields.insuranceCode} onChange={handleChange} className="mt-1 block w-full text-lg p-2"/>
+              <label htmlFor="edicode" className="block text-sm font-medium text-gray-700">보험코드</label>
+              <input type="text" name="edicode" id="edicode" value={searchFields.edicode} onChange={handleChange} className="mt-1 block w-full text-lg p-2"/>
             </div>
           </div>
 
           <button className="w-full bg-blue-200 mb-6 px-4 py-2 rounded-md" onClick={handleSearch} >검색</button>
+          <button onClick={handleDownload}>다운로드</button>
+
           {isLoading ? (
             
           <div className="flex items-center justify-center ">
@@ -163,7 +207,7 @@ function CategoryPage({
             <table className="min-w-full bg-white border border-gray-300">
               <thead>
                 <tr>
-                  {/* <th className="border-b border-gray-200 px-4 py-2 text-left text-sm font-semibold text-gray-600">이미지</th> */}
+                  <th className="border-b border-gray-200 px-4 py-2 text-left text-sm font-semibold text-gray-600">이미지</th>
                   <th className="border-b w-60 border-gray-200 px-4 py-2 text-left text-sm font-semibold text-gray-600">제품명</th>
                   <th className="border-b border-gray-200 px-4 py-2 text-left text-sm font-semibold text-gray-600">주성분 및 함량</th>
                   <th className="border-b w-40 border-gray-200 px-4 py-2 text-left text-sm font-semibold text-gray-600">업체명</th>
@@ -173,56 +217,52 @@ function CategoryPage({
               </thead>
               <tbody>
                 {/* 각 행에 대한 데이터를 매핑하는 부분 */}
-                {currentItems.map((item,idx) => (
-                  <tr key={`${item.GnlNmCd}${idx}`} className="hover:bg-gray-100" onClick={()=>router.push(`/result/${item.GnlNmCd}`)}>
-                    {/* <td className="border-b border-gray-200 px-4 py-2"><img src={item.image} alt={item.productName} className="w-10 h-10"/></td> */}
-                    <td className="border-b border-gray-200 px-4 py-2">{item.ItemName}</td>
-                    <td className="border-b border-gray-200 px-4 py-2">{item.ingredient}</td>
-                    <td className="border-b border-gray-200 px-4 py-2">{item.EntpName}</td>
-                    <td className="border-b border-gray-200 px-4 py-2">{item.EtcOtcName}</td>
-                    <td className="border-b border-gray-200 px-4 py-2">{item.insuranceCode}</td>
-                  </tr>
-                ))}
+                 {renderItems()}
               </tbody>
             </table>
         )}
           
           {
             !isLoading && (
-            <div className="mt-6 flex justify-center items-center">
-              <button 
-                disabled={startingPageNumber === 1} 
-                onClick={() => {
-                  setStartingPageNumber(prev => Math.max(prev - maxPageNumbersToShow, 1));
-                  setCurrentPage(prev => Math.max(prev - maxPageNumbersToShow, 1));
-                }}
-              >
-                &lt;
-              </button>
-              {[...Array(maxPageNumbersToShow)].map((_, idx) => {
-                const pageNumber = startingPageNumber + idx;
-                return (
-                  <span 
-                    key={pageNumber} 
-                    onClick={() => setCurrentPage(pageNumber)}
-                    className={`cursor-pointer px-2 ${currentPage === pageNumber ? 'text-blue-600 font-bold' : 'text-gray-500'}`}
-                  >
-                    {pageNumber}
-                  </span>
-                );
-              })}
-              <button 
-                disabled={endingPageNumber >= totalPages}
-                onClick={() => {
-                  setStartingPageNumber(prev => Math.min(prev + maxPageNumbersToShow, totalPages - maxPageNumbersToShow + 1));
-                  setCurrentPage(prev => Math.min(prev + maxPageNumbersToShow, totalPages));
-                }}
-              >
-                &gt;
-              </button>
-            </div>
+              <div className="mt-6 flex justify-center items-center">
+                <button 
+                  disabled={startingPageNumber === 1} 
+                  onClick={() => {
+                    setStartingPageNumber(prev => Math.max(prev - maxPageNumbersToShow, 1));
+                    setCurrentPage(prev => Math.max(prev - maxPageNumbersToShow, 1));
+                  }}
+                >
+                  &lt;
+                </button>
+                {
+                  // 페이지 번호를 매핑할 때 maxPageNumbersToShow와 totalPages 중 더 작은 값을 사용
+                  [...Array(Math.min(maxPageNumbersToShow, totalPages))].map((_, idx) => {
+                    const pageNumber = startingPageNumber + idx;
+                    return (
+                      <span 
+                        key={pageNumber} 
+                        onClick={() => setCurrentPage(pageNumber)}
+                        className={`cursor-pointer px-2 ${currentPage === pageNumber ? 'text-blue-600 font-bold' : 'text-gray-500'}`}
+                      >
+                        {pageNumber}
+                      </span>
+                    );
+                  })
+                }
+                <button 
+                  // endingPageNumber의 조건을 수정하여 totalPages를 고려
+                  disabled={endingPageNumber >= totalPages || startingPageNumber + maxPageNumbersToShow > totalPages}
+                  onClick={() => {
+                    setStartingPageNumber(prev => Math.min(prev + maxPageNumbersToShow, totalPages - maxPageNumbersToShow + 1));
+                    setCurrentPage(prev => Math.min(prev + maxPageNumbersToShow, totalPages));
+                  }}
+                >
+                  &gt;
+                </button>
+              </div>
             )
           }
+
         </div>
       </div>
     </div>

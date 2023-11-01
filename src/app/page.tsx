@@ -17,9 +17,9 @@ const categoriesETC = [
 
 
 
-const products = ["감기약1","감기약2","감기약3","감기약4", "소화제", "비타민", "진통제", "항생제"];
-
 export default function Home() {
+  const datas = require('/public/itemname-itemseq.json')
+  const productName = Object.keys(datas);
   const [query, setQuery] = useState('');
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const router = useRouter();
@@ -29,7 +29,7 @@ export default function Home() {
     setQuery(value);
 
     if (value) {
-      const filteredProducts = products.filter(product => product.includes(value));
+      const filteredProducts = productName.filter(product => product.includes(value));
       setSuggestions(filteredProducts);
     } else {
       setSuggestions([]);
@@ -56,7 +56,7 @@ export default function Home() {
 
       {/* Header / Logo */}
       <header className="mb-12">
-        <div className="bg-blue-200 p-4 rounded-md inline-block">
+        <div className="bg-blue-200 p-4 rounded-md inline-block" onClick={()=>router.push("/")}>
           <h1 className="text-4xl font-bold inline">
             <span className="text-white">MEDI</span>
             <span className="text-black">PRETER</span>
