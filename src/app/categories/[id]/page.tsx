@@ -213,7 +213,7 @@ function CategoryPage({ params }: { params: { id: string } }) {
         </div>
       </header>
       <div className="text-black flex-grow flex flex-col items-center">
-        <div className="w-full md:w-8/12 mb-12 relative">
+        <div className="w-full md:w-9/12 mb-12 relative">
           <h1 className="text-2xl mb-4">
             <span className="text-blue-500">{`${params.id} ${categories[key]}`}</span>
             <span className="text-black">{`검색결과 리스트 (${
@@ -315,7 +315,7 @@ function CategoryPage({ params }: { params: { id: string } }) {
             <table className="min-w-full bg-white border border-gray-300">
               <thead>
                 <tr>
-                  <th className="w-40 border-b border-gray-200 px-4 py-2 text-left text-sm font-semibold text-gray-600">
+                  <th className=" border-b border-gray-200 px-4 py-2 text-left text-sm font-semibold text-gray-600">
                     이미지
                   </th>
                   <th className="border-b w-60 border-gray-200 px-4 py-2 text-left text-sm font-semibold text-gray-600">
@@ -327,10 +327,10 @@ function CategoryPage({ params }: { params: { id: string } }) {
                   <th className="border-b w-40 border-gray-200 px-4 py-2 text-left text-sm font-semibold text-gray-600">
                     업체명
                   </th>
-                  <th className="w-20 border-b border-gray-200 px-4 py-2 text-left text-sm font-semibold text-gray-600">
+                  <th className=" border-b border-gray-200 px-4 py-2 text-left text-sm font-semibold text-gray-600">
                     구분
                   </th>
-                  <th className="w-auto border-b border-gray-200 px-4 py-2 text-left text-sm font-semibold text-gray-600">
+                  <th className=" border-b border-gray-200 px-4 py-2 text-left text-sm font-semibold text-gray-600">
                     보험코드
                   </th>
                 </tr>

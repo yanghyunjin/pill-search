@@ -32,7 +32,9 @@ function ResultDetail({ params }: { params: { id: string } }) {
   const grouped = require(`/public/group.json`);
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault(); // 기본 폼 제출 동작 방지
-    router.push(`/search?query=${query}`);
+    if (query) {
+      router.push(`/search?query=${query}`);
+    }
   };
 
   useEffect(() => {
@@ -294,23 +296,23 @@ function ResultDetail({ params }: { params: { id: string } }) {
             sameGroupResult.length > 0 ? sameGroupResult.length - 1 : 0
           })`}
         </h4>
-
-        {sameGroupResult
-          ? sameGroupResult.map((item: any) => {
-              if (item.itemseq != result.itemseq) {
-                return (
-                  <SearchResultCard
-                    key={item.itemseq}
-                    id={item.itemseq}
-                    title={item.itemname}
-                    description={item.company}
-                    query={item.itemname}
-                  />
-                );
-              }
-            })
-          : ""}
-        {/* 기타 동일 성분 의약품들... */}
+        <div className="overflow-y-auto h-96">
+          {sameGroupResult
+            ? sameGroupResult.map((item: any) => {
+                if (item.itemseq != result.itemseq) {
+                  return (
+                    <SearchResultCard
+                      key={item.itemseq}
+                      id={item.itemseq}
+                      title={item.itemname}
+                      description={item.company}
+                      query={item.itemname}
+                    />
+                  );
+                }
+              })
+            : ""}
+        </div>
       </div>
     );
   };

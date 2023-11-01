@@ -36,10 +36,12 @@ function SearchResults() {
   }, [searchNameResult]);
 
   const search = async () => {
-    const filteredProducts = productName.filter((product) =>
-      product.includes(query ? query : "")
-    );
-    await setSearchNameResult(filteredProducts);
+    if (query) {
+      const filteredProducts = productName.filter((product) =>
+        product.includes(query ? query : "")
+      );
+      await setSearchNameResult(filteredProducts);
+    }
   };
   const getData = async () => {
     setIsLoading(true);
@@ -48,7 +50,7 @@ function SearchResults() {
       .filter((value) => value !== undefined);
     let result: any = [];
     for (let i = 0; i < searchNameResult.length; i++) {
-      const temp = await get(child(ref(db), `/MergedDrugInfo/${newArray[i]}`));
+      const temp = await get(child(ref(db), `/MergedDrugInfo3/${newArray[i]}`));
       result.push(temp.val());
     }
     setSearchResultArray(result);

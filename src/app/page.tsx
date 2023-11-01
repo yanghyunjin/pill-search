@@ -38,7 +38,9 @@ export default function Home() {
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault(); // 기본 폼 제출 동작 방지
-    router.push(`/search?query=${query}`);
+    if (query) {
+      router.push(`/search?query=${query}`);
+    }
   };
 
   const handleSuggestionClick = (suggestion: string) => {
