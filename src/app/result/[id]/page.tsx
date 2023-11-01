@@ -64,8 +64,8 @@ function ResultDetail({ params }: { params: { id: string } }) {
     setIsLoading(true);
     const temp = await get(child(ref(db), `/MergedDrugInfo/${params.id}`));
     setResult(temp.val());
-    const temp2 = await get(child(ref(db), `/MajorCmpnNmCdList/${params.id}`));
-    setResult2(temp2.val());
+    // const temp2 = await get(child(ref(db), `/MajorCmpnNmCdList/${params.id}`));
+    // setResult2(temp2.val());
     const groupKey = findGroupForText(temp.val().gnlnmcd, grouped);
     if (groupKey) {
       await setSameGroup(grouped[groupKey]);
@@ -94,7 +94,7 @@ function ResultDetail({ params }: { params: { id: string } }) {
               <td className="py-2 font-semibold">
                 {
                   //@ts-ignore
-                  result2?.gnlNm ? result2?.gnlNm : ""
+                  result?.gnlnm ? result?.gnlnm : ""
                 }
               </td>
             </tr>
@@ -103,7 +103,7 @@ function ResultDetail({ params }: { params: { id: string } }) {
               <td className="py-2 font-semibold">
                 {
                   //@ts-ignore
-                  result2?.iqtyTxt ? result2?.iqtyTxt : ""
+                  result?.iqtytxt ? result?.iqtytxt : ""
                 }
               </td>
             </tr>
