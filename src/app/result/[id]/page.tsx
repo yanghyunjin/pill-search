@@ -82,7 +82,6 @@ function ResultDetail({ params }: { params: { id: string } }) {
     }
     return null;
   }
-
   // 상세 정보 카드
   const DetailInfoCard: React.FC = () => {
     return (
@@ -395,13 +394,13 @@ function ResultDetail({ params }: { params: { id: string } }) {
             )}
 
             {showDetail && (
-              <div className="w-full max-w-3xl mt-2">
+              <div className="w-full max-w-3xl mt-2 text-black">
                 <div className="bg-white p-4 rounded-md shadow-sm mb-4">
                   <h4 className="font-semibold mb-4">효능 효과</h4>
                   <p>
                     {
                       //@ts-ignore
-                      result?.efcyQesitm ? result?.efcyQesitm : ""
+                      result?.efcyqesitm ? result?.efcyqesitm : ""
                     }
                   </p>
                 </div>
@@ -411,7 +410,7 @@ function ResultDetail({ params }: { params: { id: string } }) {
                   <p>
                     {
                       //@ts-ignore
-                      result?.useMethodQesitm ? result?.useMethodQesitm : ""
+                      result?.usemethodqesitm ? result?.usemethodqesitm : ""
                     }
                   </p>
                 </div>
@@ -421,7 +420,7 @@ function ResultDetail({ params }: { params: { id: string } }) {
                   <p>
                     {
                       //@ts-ignore
-                      result?.atpnQesitm ? result?.atpnQesitm : ""
+                      result?.atpnqesitm ? result?.atpnqesitm : ""
                     }
                   </p>
                 </div>
@@ -431,7 +430,7 @@ function ResultDetail({ params }: { params: { id: string } }) {
                   <p>
                     {
                       //@ts-ignore
-                      result?.intrcQesitm ? result?.intrcQesitm : ""
+                      result?.intrcqesitm ? result?.intrcqesitm : ""
                     }
                   </p>
                 </div>
@@ -441,7 +440,7 @@ function ResultDetail({ params }: { params: { id: string } }) {
                   <p>
                     {
                       //@ts-ignore
-                      result?.seQesitm ? result?.seQesitm : ""
+                      result?.seqesitm ? result?.seqesitm : ""
                     }
                   </p>
                 </div>
