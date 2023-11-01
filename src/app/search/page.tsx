@@ -1,52 +1,59 @@
 "use client";
 import Head from "next/head";
-import { useState,useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useSearchParams } from "next/navigation";
 import SearchResultCard from "../../components/SearchResultCard";
 import RecommendedKeyword from "../../components/RecommendedKeyword";
-import { db, app } from '../../firebase'; // Firebase 설정 파일
-import { ref, get, set, push, child, remove, update, serverTimestamp } from 'firebase/database';
+import { db, app } from "../../firebase"; // Firebase 설정 파일
+import {
+  ref,
+  get,
+  set,
+  push,
+  child,
+  remove,
+  update,
+  serverTimestamp,
+} from "firebase/database";
 
 function SearchResults() {
   const searchParams = useSearchParams();
-  const datas = require('/public/itemname-itemseq.json')
+  const datas = require("/public/itemname-itemseq.json");
   const [isLoading, setIsLoading] = useState(true);
   const productName = Object.keys(datas);
   const [query, setQuery] = useState(searchParams.get("query"));
   const router = useRouter();
-  const [searchNameResult,setSearchNameResult]=useState<string[]>([]);
-  const [searchResultArray,setSearchResultArray]=useState([]);
+  const [searchNameResult, setSearchNameResult] = useState<string[]>([]);
+  const [searchResultArray, setSearchResultArray] = useState([]);
 
-  useEffect(()=>{
-    search()
-  },[])
+  useEffect(() => {
+    search();
+  }, []);
 
-  useEffect(()=>{  
-    console.log('aaa')
+  useEffect(() => {
     getData();
-  },[searchNameResult])
+  }, [searchNameResult]);
 
-  const search =async ()=> {
-    console.log(query)
-    console.log(productName)
-    const filteredProducts = productName.filter(product => product.includes(query?query:""));
+  const search = async () => {
+    const filteredProducts = productName.filter((product) =>
+      product.includes(query ? query : "")
+    );
     await setSearchNameResult(filteredProducts);
-    console.log(searchNameResult)
-  }
-  const getData= async ()=>{
+  };
+  const getData = async () => {
     setIsLoading(true);
-    const newArray = searchNameResult.map(key => datas[key]).filter(value => value !== undefined);
-    let result:any = [];
-    for(let i=0;i<searchNameResult.length;i++){
-      console.log(searchNameResult[i])
-      const temp = await get(child(ref(db), `/MergedDrugInfo/${newArray[i]}`)) 
+    const newArray = searchNameResult
+      .map((key) => datas[key])
+      .filter((value) => value !== undefined);
+    let result: any = [];
+    for (let i = 0; i < searchNameResult.length; i++) {
+      const temp = await get(child(ref(db), `/MergedDrugInfo/${newArray[i]}`));
       result.push(temp.val());
     }
-    console.log(result)
     setSearchResultArray(result);
-    setIsLoading(false); 
-  }
+    setIsLoading(false);
+  };
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault(); // 기본 폼 제출 동작 방지
     search();
@@ -66,11 +73,16 @@ function SearchResults() {
 
       {/* Header / Logo */}
       <header className="mb-12">
-        <div className="bg-blue-200 p-4 rounded-md inline-block" onClick={()=>router.push("/")}>
-          <h1 className="text-4xl font-bold inline">
-            <span className="text-white">MEDI</span>
-            <span className="text-black">PRETER</span>
-          </h1>
+        <div
+          className="rounded-md inline-block"
+          onClick={() => router.push("/")}
+        >
+          <img
+            src="/images/logo.jpg"
+            alt="MEDI PRETER Logo"
+            className="rounded h-16 w-64 object-cover "
+          />{" "}
+          {/* h-16은 예시로 넣은 이미지 높이입니다. 필요에 따라 조절하세요. */}
         </div>
       </header>
 
@@ -115,30 +127,31 @@ function SearchResults() {
         </div> */}
         {isLoading ? (
           <div className="flex items-center justify-center ">
-            <div  
+            <div
               className="inline-block h-20 w-20 animate-spin rounded-full border-8 border-solid border-blue-500 border-r-transparent"
-              role="status">
-              <span
-                className="!absolute !-m-px !h-px !w-px !overflow-hidden !whitespace-nowrap !border-0 !p-0 ![clip:rect(0,0,0,0)]"
-                >Loading...
+              role="status"
+            >
+              <span className="!absolute !-m-px !h-px !w-px !overflow-hidden !whitespace-nowrap !border-0 !p-0 ![clip:rect(0,0,0,0)]">
+                Loading...
               </span>
             </div>
           </div>
         ) : (
-        <div className="w-full max-w-3xl">
-          <h3 className="text-xl text-black font-semibold mb-4">
-            {`검색 결과 (${searchResultArray.length})`}
-          </h3>
-          {searchResultArray.map((item:any) => (
-            <SearchResultCard
-              key={item.itemseq}
-              id={item.itemseq}
-              title={item.itemname}
-              description={item.company}
-              query={item.itemname}
-            />
-          ))}
-        </div>)}
+          <div className="w-full max-w-3xl">
+            <h3 className="text-xl text-black font-semibold mb-4">
+              {`검색 결과 (${searchResultArray.length})`}
+            </h3>
+            {searchResultArray.map((item: any) => (
+              <SearchResultCard
+                key={item.itemseq}
+                id={item.itemseq}
+                title={item.itemname}
+                description={item.company}
+                query={item.itemname}
+              />
+            ))}
+          </div>
+        )}
       </main>
     </div>
   );
