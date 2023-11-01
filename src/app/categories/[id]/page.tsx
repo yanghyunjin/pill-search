@@ -87,7 +87,7 @@ function CategoryPage({ params }: { params: { id: string } }) {
       const snapshot = await get(
         child(
           ref(db),
-          `/MergedDrugInfoByGnlNmCd/${uniqueGnlNmCdItems[i].gnlnmcd}`
+          `/MergedDrugInfoByGnlNmCd2/${uniqueGnlNmCdItems[i].gnlnmcd}`
         )
       );
       console.log(i);
@@ -177,10 +177,12 @@ function CategoryPage({ params }: { params: { id: string } }) {
         }
       >
         <td className="border-b border-gray-200 px-4 py-2">
-          <img src={item.itemimage} alt={item.GnlNmCd} className="w-10 h-10" />
+          <img src={item.itemimage} alt={item.GnlNmCd} className="w-20 h-20" />
         </td>
         <td className="border-b border-gray-200 px-4 py-2">{item.itemname}</td>
-        <td className="border-b border-gray-200 px-4 py-2">{item.ingrqty}</td>
+        <td className="border-b border-gray-200 px-4 py-2">
+          {`${item.gnlnm} ${item.capacity}${item.unit}`}
+        </td>
         <td className="border-b border-gray-200 px-4 py-2">{item.entpname}</td>
         <td className="border-b border-gray-200 px-4 py-2">
           {item.etcotcname}
@@ -211,7 +213,7 @@ function CategoryPage({ params }: { params: { id: string } }) {
         </div>
       </header>
       <div className="text-black flex-grow flex flex-col items-center">
-        <div className="w-8/12 mb-12 relative">
+        <div className="w-full md:w-8/12 mb-12 relative">
           <h1 className="text-2xl mb-4">
             <span className="text-blue-500">{`${params.id} ${categories[key]}`}</span>
             <span className="text-black">{`검색결과 리스트 (${
@@ -313,7 +315,7 @@ function CategoryPage({ params }: { params: { id: string } }) {
             <table className="min-w-full bg-white border border-gray-300">
               <thead>
                 <tr>
-                  <th className="border-b border-gray-200 px-4 py-2 text-left text-sm font-semibold text-gray-600">
+                  <th className="w-40 border-b border-gray-200 px-4 py-2 text-left text-sm font-semibold text-gray-600">
                     이미지
                   </th>
                   <th className="border-b w-60 border-gray-200 px-4 py-2 text-left text-sm font-semibold text-gray-600">
@@ -325,10 +327,10 @@ function CategoryPage({ params }: { params: { id: string } }) {
                   <th className="border-b w-40 border-gray-200 px-4 py-2 text-left text-sm font-semibold text-gray-600">
                     업체명
                   </th>
-                  <th className="border-b border-gray-200 px-4 py-2 text-left text-sm font-semibold text-gray-600">
+                  <th className="w-20 border-b border-gray-200 px-4 py-2 text-left text-sm font-semibold text-gray-600">
                     구분
                   </th>
-                  <th className="border-b border-gray-200 px-4 py-2 text-left text-sm font-semibold text-gray-600">
+                  <th className="w-auto border-b border-gray-200 px-4 py-2 text-left text-sm font-semibold text-gray-600">
                     보험코드
                   </th>
                 </tr>

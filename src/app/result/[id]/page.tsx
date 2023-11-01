@@ -49,7 +49,7 @@ function ResultDetail({ params }: { params: { id: string } }) {
     if (sameGroup) {
       for (let i = 0; i < sameGroup.length; i++) {
         const temp = await get(
-          child(ref(db), `/MergedDrugInfoByGnlNmCd/${sameGroup[i]}`)
+          child(ref(db), `/MergedDrugInfoByGnlNmCd2/${sameGroup[i]}`)
         );
         arr.push(...temp.val());
       }
@@ -62,8 +62,9 @@ function ResultDetail({ params }: { params: { id: string } }) {
 
   const getData = async () => {
     setIsLoading(true);
-    const temp = await get(child(ref(db), `/MergedDrugInfo/${params.id}`));
+    const temp = await get(child(ref(db), `/MergedDrugInfo3/${params.id}`));
     setResult(temp.val());
+    console.log(temp.val());
     // const temp2 = await get(child(ref(db), `/MajorCmpnNmCdList/${params.id}`));
     // setResult2(temp2.val());
     const groupKey = findGroupForText(temp.val().gnlnmcd, grouped);
@@ -103,7 +104,11 @@ function ResultDetail({ params }: { params: { id: string } }) {
               <td className="py-2 font-semibold">
                 {
                   //@ts-ignore
-                  result?.iqtytxt ? result?.iqtytxt : ""
+                  result?.capacity ? result?.capacity : ""
+                }
+                {
+                  //@ts-ignore
+                  result?.unit ? result?.unit : ""
                 }
               </td>
             </tr>
