@@ -222,7 +222,7 @@ function CategoryPage({ params }: { params: { id: string } }) {
           </h1>
 
           <div className="mb-6 grid grid-cols-2 gap-4">
-            <div>
+            {/* <div>
               <label
                 htmlFor="entpname"
                 className="block text-sm font-medium text-gray-700"
@@ -238,7 +238,6 @@ function CategoryPage({ params }: { params: { id: string } }) {
                 className="mt-1 block w-full text-lg p-2"
               />
             </div>
-
             <div>
               <label
                 htmlFor="etcotcname"
@@ -255,7 +254,6 @@ function CategoryPage({ params }: { params: { id: string } }) {
                 className="mt-1 block w-full text-lg p-2"
               />
             </div>
-
             <div>
               <label
                 htmlFor="itemname"
@@ -272,7 +270,6 @@ function CategoryPage({ params }: { params: { id: string } }) {
                 className="mt-1 block w-full text-lg p-2"
               />
             </div>
-
             <div>
               <label
                 htmlFor="edicode"
@@ -288,6 +285,139 @@ function CategoryPage({ params }: { params: { id: string } }) {
                 onChange={handleChange}
                 className="mt-1 block w-full text-lg p-2"
               />
+            </div>
+            */}
+            <div>
+              <label
+                htmlFor="entpname"
+                className="block text-sm font-medium text-gray-700"
+              >
+                업체명
+              </label>
+              <select
+                id="entpname"
+                name="entpname"
+                value={searchFields.entpname}
+                onChange={handleChange}
+                className="mt-1 block w-full pl-3 pr-10 py-2 text-lg border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
+              >
+                <option value="">선택해주세요</option>
+                {products
+                  .reduce((unique: any[], product: any) => {
+                    // entpname 값이 있고, 아직 unique 배열에 포함되지 않았다면 추가합니다.
+                    if (
+                      product.entpname &&
+                      !unique.some((u) => u.entpname === product.entpname)
+                    ) {
+                      unique.push(product);
+                    }
+                    return unique;
+                  }, [])
+                  .map((product: any, index) => (
+                    <option key={index} value={product.entpname}>
+                      {product.entpname}
+                    </option>
+                  ))}
+              </select>
+            </div>
+            <div>
+              <label
+                htmlFor="etcotcname"
+                className="block text-sm font-medium text-gray-700"
+              >
+                구분
+              </label>
+              <select
+                id="etcotcname"
+                name="etcotcname"
+                value={searchFields.etcotcname}
+                onChange={handleChange}
+                className="mt-1 block w-full pl-3 pr-10 py-2 text-lg border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
+              >
+                <option value="">선택해주세요</option>
+                {products
+                  .reduce((unique: any[], product: any) => {
+                    // etcotcname 값이 있고, 아직 unique 배열에 포함되지 않았다면 추가합니다.
+                    if (
+                      product.etcotcname &&
+                      !unique.some((u) => u.etcotcname === product.etcotcname)
+                    ) {
+                      unique.push(product);
+                    }
+                    return unique;
+                  }, [])
+                  .map((product: any, index) => (
+                    <option key={index} value={product.etcotcname}>
+                      {product.etcotcname}
+                    </option>
+                  ))}
+              </select>
+            </div>
+            <div>
+              <label
+                htmlFor="itemname"
+                className="block text-sm font-medium text-gray-700"
+              >
+                제품명
+              </label>
+              <select
+                id="itemname"
+                name="itemname"
+                value={searchFields.itemname}
+                onChange={handleChange}
+                className="mt-1 block w-full pl-3 pr-10 py-2 text-lg border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
+              >
+                <option value="">선택해주세요</option>
+                {products
+                  .reduce((unique: any[], product: any) => {
+                    // itemname 값이 있고, 아직 unique 배열에 포함되지 않았다면 추가합니다.
+                    if (
+                      product.itemname &&
+                      !unique.some((u) => u.itemname === product.itemname)
+                    ) {
+                      unique.push(product);
+                    }
+                    return unique;
+                  }, [])
+                  .map((product: any, index) => (
+                    <option key={index} value={product.itemname}>
+                      {product.itemname}
+                    </option>
+                  ))}
+              </select>
+            </div>
+            <div>
+              <label
+                htmlFor="edicode"
+                className="block text-sm font-medium text-gray-700"
+              >
+                보험코드
+              </label>
+              <select
+                id="edicode"
+                name="edicode"
+                value={searchFields.edicode}
+                onChange={handleChange}
+                className="mt-1 block w-full pl-3 pr-10 py-2 text-lg border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
+              >
+                <option value="">선택해주세요</option>
+                {products
+                  .reduce((unique: any[], product: any) => {
+                    // edicode 값이 있고, 아직 unique 배열에 포함되지 않았다면 추가합니다.
+                    if (
+                      product.edicode &&
+                      !unique.some((u) => u.edicode === product.edicode)
+                    ) {
+                      unique.push(product);
+                    }
+                    return unique;
+                  }, [])
+                  .map((product: any, index) => (
+                    <option key={index} value={product.edicode}>
+                      {product.edicode}
+                    </option>
+                  ))}
+              </select>
             </div>
           </div>
 

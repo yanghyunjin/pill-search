@@ -123,7 +123,7 @@ export default function Home() {
           <div>
             {/* OTC Section */}
             <h3 className="text-2xl text-black font-semibold mb-4">
-              Top 3 일반 의약품(OTC) 매출액
+              Top 3 일반의약품(OTC) 매출액
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
               {categoriesOTC.map((category) => (
