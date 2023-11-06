@@ -331,9 +331,9 @@ function ResultDetail({ params }: { params: { id: string } }) {
           onClick={() => router.push("/")}
         >
           <img
-            src="/images/logo.jpg"
+            src="/images/logo.png"
             alt="MEDI PRETER Logo"
-            className="rounded h-16 w-64 object-cover "
+            className=" object-cover "
           />{" "}
           {/* h-16은 예시로 넣은 이미지 높이입니다. 필요에 따라 조절하세요. */}
         </div>
